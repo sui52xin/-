@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>网页标题</title>            <!--网页标题-->
+     <style>
+        .navbar{                                         <
+            display:flex ;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            height: 50px;
+            background: linear-gradient(to right,#333,#555);
+            font-family: "Arial",sans-serif;
+            color: #fff;
+        }
+        .mask{
+
+        }
+        .navItem{
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .navItem li{
+            color:#fff ;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        .navList1:hover{
+            color: greenyellow;
+        }
+        .navList2:hover{
+            color: rgb(244, 40, 4);
+        }
+        .navList3:hover{
+            color: gold;
+        }
+        .navList4:hover{
+            color: lightcyan;
+        }
+        body {
+            background-image: url("../ing/dicengbijingt");       /*底层背景图*/
+        }
+        h1 {
+            text-align: center;
+            color: #000;
+        }
+     </style> 
+</head>
+<body style>
+    <header class="fxc active down">                  <!--第一部分-->
+       <nav class="navbar">
+        <div class="mask">巴蜀四季</div>
+        <div class="col fxb">
+            <ul class="navItem">
+                <li class="navList1">春</li>
+                <li class="navList2">夏</li>
+                <li class="navList3">秋</li>
+                <li class="navList4">冬</li>
+            </ul>
+        </div>
+       </nav>
+    </header>
+    <main>                   <!--主体-->
+        <section  class="page1">            <!--图片+视频-->
+            <div class="picture1">
+                图片
+            </div>
+             <div class="video1">
+                视频
+            </div>
+             <div class="title1">
+                图片
+            </div>
+        </section>
+        <section class="page2">          <!--四川地图-->
+            <div class="map-section">
+                四川地图
+            </div>
+        </section>
+        <section class="page3">           <!--时间线-->
+            <div>
+
+            </div>
+        </section>
+        <section class="page4">         <!--起源-->
+            <div class="origin-section">
+                起源
+            </div>
+        </section>
+        
+    </main>
+    <footer>                              <!--页脚-->
+        <div class="box last-conclusion">  <!--结语-->
+            结语
+        </div>
+        <aside class="qr-left-placeholder"> <!--二维码-->
+                二维码区域
+        </aside>
+    </footer>
+</body>erweima
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>熊猫主题网站 - 框架</title>
+
+  <style>
+    /* ==========================================
+       1. 基础重置 & 全局设定
+       ========================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* 让 padding 不会撑大盒子 */
+    }
+
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #f4f4f4; /* 页面灰背景 */
+      color: #333;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    /* 统一给所有区块加个虚线边框，方便你看结构。做完后删掉即可 */
+    .box {
+      border: 2px dashed #666;
+      background-color: #fff;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* ==========================================
+       2. 整个页面的三列大布局
+       ========================================== */
+    .page-container {
+      display: flex;
+      gap: 20px; /* 左、中、右三列之间的间距 */
+      max-width: 1400px; /* 最大宽度，防止超大屏幕拉太宽 */
+      margin: 0 auto; /* 页面居中 */
+      position: relative; /* 为了给底部的绝对定位线做参考 */
+      padding-bottom: 80px; /* 给底部“变化线”留出空间 */
+    }
+
+    /* 左侧主列 */
+    .left-column {
+      flex: 2; /* 占 2 份宽度 */
+      display: flex;
+      flex-direction: column; /* 里面的内容从上到下排列 */
+      gap: 20px;
+    }
+
+    /* 右侧区域（包含中间列和最右侧列） */
+    .right-area {
+      flex: 1.5;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* 中间列 */
+    .middle-column {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 最右侧列 */
+    .far-right-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ==========================================
+       3. 左侧具体内容
+       ========================================== */
+    /* 顶部大标题 */
+    .main-title {
+      height: 80px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* 图片+视频区域 */
+    .media-section {
+      display: flex;
+      gap: 15px;
+      height: 350px; /* 给一个固定高度，你可以按需改 */
+      align-items: stretch;
+    }
+
+    /* 左边大图 */
+    .media-image {
+      flex: 1.5;
+      height: 100%;
+      font-size: 18px;
+    }
+
+    /* 右边视频区（包含标题和视频） */
+    .media-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .media-right .small-title {
+      height: 50px;
+    }
+
+    .media-right .video-box {
+      flex: 1; /* 占满剩余高度 */
+    }
+
+    /* 另一个网页（悬浮块） */
+    .another-page {
+      height: 50px;
+      width: 70%; /* 宽度只占 70%，所以会浮在中间 */
+      margin: -25px auto 10px auto; /* 负 margin 让它往上跑一点，盖住上面的边 */
+      position: relative;
+      z-index: 2; /* 保证它在上方 */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 加点阴影，显得立体 */
+    }
+
+    /* 四川地图区 */
+    .map-section {
+      height: 350px;
+      font-size: 18px;
+      position: relative; /* 为了以后放地图 API 用 */
+    }
+
+    /* ==========================================
+       4. 中间列 & 右侧列内容
+       ========================================== */
+    .origin-section {
+      height: 180px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* 二维码区域 */
+    .qr-section {
+      display: flex;
+      gap: 15px;
+      height: 150px;
+    }
+
+    .qr-left-placeholder {
+      flex: 2; /* 左边占大块 */
+    }
+
+    .qr-code {
+      flex: 1; /* 二维码占小块 */
+    }
+
+    /* 总结区 */
+    .summary-section {
+      height: 320px;
+      flex-direction: column;
+      gap: 20px;
+      font-size: 18px;
+    }
+
+    /* 最右侧底部的大空白框 */
+    .blank-section {
+      flex: 1; /* 自动撑满剩余高度 */
+      min-height: 300px;
+    }
+
+    /* ==========================================
+       5. 底部变化线 & 熊猫
+       ========================================== */
+    .bottom-line-wrapper {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background-color: #000;
+      z-index: 10;
+    }
+
+    .panda-label {
+      position: absolute;
+      bottom: -15px;
+      left: 20px;
+      background-color: #f4f4f4;
+      padding: 0 10px;
+      font-weight: bold;
+    }
+
+    /* 右侧的箭头 */
+    .arrow-right {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      border: solid black;
+      border-width: 0 4px 4px 0;
+      display: inline-block;
+      padding: 12px;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+
+    /* ==========================================
+       6. 响应式（手机端变成上下排列）
+       ========================================== */
+    @media (max-width: 900px) {
+      .page-container, .right-area, .media-section {
+        flex-direction: column; /* 全部变成上下排 */
+      }
+      
+      .another-page {
+        width: 100%; /* 手机上就不悬浮了，占满整行 */
+        margin: 10px 0;
+      }
+
+      .bottom-line-wrapper {
+        display: none; /* 手机上隐藏那条复杂的线 */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 整个页面的大容器 -->
+  <div class="page-container">
+
+    <!-- ================= 左侧主列 ================= -->
+    <div class="left-column">
+      
+      <!-- 1. 顶部大标题 -->
+      <div class="box main-title">标题</div>
+
+      <!-- 2. 图片 + 视频区域 -->
+      <div class="box media-section">
+        <!-- 左边大图 -->
+        <div class="box media-image">图片</div>
+        
+        <!-- 右边视频区 -->
+        <div class="media-right">
+          <div class="box small-title">标题</div>
+          <div class="box video-box">视频</div>
+        </div>
+      </div>
+
+      <!-- 3. 另一个网页（悬浮块） -->
+      <div class="box another-page">另一个网页</div>
+
+      <!-- 4. 四川地图 -->
+      <div class="box map-section">
+        四川地图 可以点
+      </div>
+      
+    </div>
+
+    <!-- ================= 右侧区域（包含中间列 + 最右列） ================= -->
+    <div class="right-area">
+
+      <!-- 中间列 -->
+      <div class="middle-column">
+        
+        <!-- 起源 -->
+        <div class="box origin-section">起源</div>
+
+        <!-- 二维码区域 -->
+        <div class="box qr-section">
+          <div class="box qr-left-placeholder"></div>
+          <div class="box qr-code">二维码</div>
+        </div>
+
+      </div>
+
+      <!-- 最右侧列 -->
+      <div class="far-right-column">
+        
+        <!-- 总结提升 -->
+        <div class="box summary-section">
+          <div>总结</div>
+          <div>提升主题</div>
+        </div>
+
+        <!-- 最下方空白大框 -->
+        <div class="box blank-section"></div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= 底部跨整个页面的变化线 ================= -->
+    <div class="bottom-line-wrapper">
+      <span class="panda-label">熊猫</span>
+      <i class="arrow-right"></i>
+    </div>
+
+  </div>
+
+</body>
+</html>
