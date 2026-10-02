@@ -27,7 +27,7 @@ type PageConfig struct {
 	CurrentPlace MapPoint   `json:"CurrentPlace"` //对应的地点
 }
 
-var pageTemplates *template.Template // 保存已经加载的 HTML 模板。
+var pageTemplates *index.Template // 保存已经加载的 HTML 模板。
 func main() {
 	port := os.Getenv("PORT") //读取环境变量
 	if port == "" {
@@ -51,7 +51,7 @@ func main() {
 	mux.Handle("/static/", http.FileServer(http.Dir(staticRoot)))
 	mux.HandleFunc("/api/health", healthHandler)          //注册健康检查接口
 	mux.HandleFunc("/api/config", configHandler)          // 注册页面配置接口。
-	mux.HandleFunc("/api/map-points", mapPointHandler)    //注册地图地点接口
+	mux.HandleFunc("/api/map-points", mapPointsHandler)   //注册地图地点接口
 	mux.HandleFunc("/go/place", placeRedirectHandler)     //注册点击跳转接口
 	mux.HandleFunc("/place/", placePageHandler)           //注册详情网页接口
 	mux.HandleFunc("/go/sichuan", sichuanRedirectHandler) // 注册兼容旧入口的四川跳转接口
@@ -162,12 +162,12 @@ func sichuanRedirectHandler(w http.ResponseWriter, r *http.Request) { // 定义�
 		http.NotFound(w, r) // 返回 404。
 		return
 	}
-	http.Redirect(w, r, "/place/"+string(point.ID)+"/", http.StatusFound) // 跳转到对应地点详情页。
+	http.Redirect(w, r, "/place/"+point.ID+"/", http.StatusFound) // 跳转到对应地点详情页。
 }
 
-func findMapPoint(name string) (MapPoint, bool) {
+func findMapPoint(ID string) (MapPoint, bool) {
 	for _, point := range mapPoints {
-		if point.Name == name {
+		if point.ID == ID {
 			return point, true
 		}
 	}
