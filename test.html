@@ -4,50 +4,102 @@
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>网页标题</title>            <!--网页标题-->
-     <style>
-        .navbar{                                         <
-            display:flex ;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px;
-            height: 50px;
-            background: linear-gradient(to right,#333,#555);
-            font-family: "Arial",sans-serif;
-            color: #fff;
+     <style>                            
+        .navbar{                                         
+             display:flex ;                         
+             justify-content: space-between;            /*一左一右*/
+             align-items: center;
+             padding: 15px 40px;                       /*上下+左右*/
+             height: 50px;
+             background: linear-gradient(to right,#333,#555);      /*背景颜色*/
+             font-family: "Arial",sans-serif;         /*字体*/
+             color: #fff;                           /*颜色*/
         }
-        .mask{
-
+        .mask{                                       /*巴蜀四季*/
+             display: flex;
+             gap: 25px;
+             font-size: 30px;
+             background: linear-gradient(to right,#4facfe,#a445b2);     /*巴蜀四季的颜色*/
+             -webkit-background-clip: text;
+             -webkit-text-fill-color: transparent;
+             background-clip: text;
+             color: transparent;
         }
-        .navItem{
-            display: flex;
-            gap: 30px;
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .navItem{                         /*春夏秋冬*/
+             display: flex;
+             gap: 25px;            /* 每个字之间的间距 */
+             list-style: none;     /* 去掉小圆点 */
+             padding: 0;
+             margin: 0;
         }
         .navItem li{
-            color:#fff ;
-            transition: color 0.3s;
-            cursor: pointer;
+             color:#fff ;
+             transition: color 0.3s;
+             cursor: pointer;
         }
         .navList1:hover{
-            color: greenyellow;
+             color: greenyellow;
         }
         .navList2:hover{
-            color: rgb(244, 40, 4);
+             color: rgb(244, 40, 4);
         }
         .navList3:hover{
-            color: gold;
+             color: gold;
         }
         .navList4:hover{
-            color: lightcyan;
-        }
+             color: lightcyan;
+        }                                    /*春夏秋冬颜色结束*/
         body {
-            background-image: url("../ing/dicengbijingt");       /*底层背景图*/
+             background-image: url("../ing/dicengbijingt");       /*底层背景图*/
         }
         h1 {
-            text-align: center;
-            color: #000;
+             text-align: center;
+             color: #000;
+        }
+        .footer{
+             display:flex ;                         
+             flex-direction: column;
+              gap: 20px;
+             padding: 60px 80px 30px 80px;  
+             background: linear-gradient(to right,#333,#555);      /*背景颜色*/
+             font-family: "Arial",sans-serif;         /*字体*/
+             color: #fff;                           /*颜色*/
+        }
+        .footer-Logo{
+             margin-bottom: 80px;
+             letter-spacing: 2px;
+             font-weight: 900;
+             font-size: 56px;
+        }
+        .footer-jiemian2{
+             display: flex;
+             justify-content: space-between;
+             align-items: flex-start;
+             gap: 60px;
+        }
+        .footer-xiaoyu{
+             font-size: 15px;
+             line-height: 1.8;
+             margin-bottom: 20px;
+             color: #ddd;
+        }
+        .footer-qr img{
+             display: block;
+             flex-direction:column;
+             height: auto;
+             max-width: 90px;
+        }
+        .footer-jiemian3{
+             display: flex;
+             justify-content: space-between;
+             font-size: 13px;
+             line-height: 1.8;
+             padding-top: 20px;
+             border-top:1px solid #444;
+             color: #888;
+        }
+        .footer-jiemian3 p{
+            margin: 0;
         }
      </style> 
 </head>
@@ -94,13 +146,29 @@
         </section>
         
     </main>
-    <footer>                              <!--页脚-->
-        <div class="box last-conclusion">  <!--结语-->
-            结语
-        </div>
-        <aside class="qr-left-placeholder"> <!--二维码-->
-                二维码区域
-        </aside>
+    <footer class="footer">                              <!--页脚-->
+       
+             <div class="footer-Logo">巴蜀四季</div>    <!--logo-->
+             <div class="footer-jiemian2">                      <!--结面2-->
+                 <div class="footer-xiaoyu">                <!--小语-->
+                     春花秋月何时了？往事知多少。<br>
+                     小楼昨夜又东风，故国不堪回首月明中。<br>
+                     雕栏玉砌应犹在，只是朱颜改。<br>
+                     问君能有几多愁？恰似一江春水向东流。
+                 </div>
+        
+                <div class="footer-qr">                     <!--二维码-->
+                     <img src="../ing/微信图片.jpg" alt="二维码">          
+                 </div>
+             </div>
+             <div class="footer-jiemian3">                   <!--结面3-->
+                 <p >            <!--网站版权说明-->
+                     © 2021-2026 Fujian Nanping Nanfu Battery Co., Ltd. All Rights Reserved
+                 </p>
+                 <p>                                  <!--设计申明-->
+                    Web Designed by uunn.cn
+                 </p>
+             </div>
     </footer>
 </body>erweima
 </html>
