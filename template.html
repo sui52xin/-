@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>"网页开场视频"</title>
+        <style>
+            /*全局设置*/
+             * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            /*网页主体*/
+            body{
+                min-height: 100vh;
+                display:#f4f4f4 ;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+            /*开场视频层遮罩层*/
+            .intro-lay{
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                display:grid;
+                place-items: center;
+                background:#000;
+                transition:opacity 0.6s ease,visibility 0.6s ease;
+            }
+            /*视频结束状态*/
+            .intro-layer.is-finsined{
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+            /*结束开场视频样式*/
+            .intro-layer video{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                background:#000;
+            }
+            /*结束自动播放时的按钮*/
+            .video-fallback{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+                padding: 14px 22px;
+                color:#fff;
+                border: 0; 
+                border-radius: 6px;
+                background: rgba(0,0,0,0.7);
+                font-size: 116px;
+                cursor: pointer;
+            }
+            /*hidden属性*/
+            .video-fallback[hidden]{
+                display: none;
+            }
+            /*主界面*/
+            .page-shell{
+                opacity: 0;
+                transition: translatey(20px);
+                transition: opacity 0.8s ease,transform 0.8s ease;
+                padding: 40px;
+            }
+            /*视频结束后主界面显示*/
+            .page-shell.is-ready{
+                opacity: 1;
+                transform: translatey(0);
+            }
+            /*主页面标题*/
+            .page-shell h1{
+                font-size: 48px;
+                text-align: center;
+                margin-bottom: 24px;
+            }
+            /*主页面内容*/
+            .page-shell p{
+                max-width: 800px;
+                margin: 0 auto;
+                line-height: 1.6;
+                text-align: center;
+            }
+        
+        </style>
+    </head>
+<body>
+    <div class="intro-layer" id="introLayer">
+       <video 
+       class="intro-video" id="introVideo"
+       src="{{.VideoSrc}}"
+       autoplay
+         muted
+         playsinline
+            preload="auto"
+        ></video>
+        <button class="video-fallback" 
+        id="videoFallback" type="button"  hidden>
+        点击播放视频
+    </button>
+    </div>
+    <main class="page-shell" id="pageShell">
+        <h1>网页开场视频</h1>
+        <p>这是一个示例网页，展示了如何在网页加载时播放开场视频，并在视频播放结束后显示主内容。请确保您的浏览器支持自动播放视频功能。</p>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+      const introLayer = document.getElementById("introLayer");
+      const introVideo = document.getElementById("introVideo");
+      const videoFallback = document.getElementById("videoFallback");
+      const pageShell = document.getElementById("pageShell");
+      if (!introLayer || !introVideo || !videoFallback || !pageShell) {
+        console.error("必要的元素未找到");
+        return;
+      }
+      const revealpage = () => {
+        introLayer.classList.add("is-finsined");
+        pageShell.classList.add("is-ready");
+      };
+      introVideo.addEventListener("ended", revealpage);
+        introVideo.addEventListener("error", () => {
+            console.error("视频加载失败");
+            videoFallback.removeAttribute("hidden");
+        });
+        const startPlayback = () => {
+           const playPromise = introVideo.play();
+            if (playPromise !== undefined) {
+               playPromise.catch(()=>{
+                videoFallback.hidden=false;
+               })
+            }
+        };
+        startPlayback();
+        videoFallback.addEventListener("click",async  () => {
+            videoFallback.hidden=true;
+            try {
+                await introVideo.play();
+            } catch (error) {
+                console.error("视频播放失败", error);
+            }
+        });
+</body>
