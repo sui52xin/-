@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -27,18 +28,22 @@ type PageConfig struct {
 	CurrentPlace MapPoint   `json:"CurrentPlace"` //对应的地点
 }
 
-var pageTemplates *index.Template // 保存已经加载的 HTML 模板。
+// template是一个Go的包
+// 第 32 行修改为：
+var pageTemplates = template.Must(template.ParseFiles("index.html", "about.html", "template.html")) // 保存已经加载的 HTML 模板。
 func main() {
 	port := os.Getenv("PORT") //读取环境变量
 	if port == "" {
 		port = defaultPort //默认
 	}
 	var err error
+	//解析
 	pageTemplates, err = template.ParseGlob("templates/*")
 	if err != nil {
 		log.Fatal("加载 HTML 模板失败！", err)
 	}
-	staticRoot, err := filepath.Abs(staticDir) //转化为绝对路径
+	staticRoot, err := filepath.Abs(staticDir)
+	//转化为绝对路径
 	if err != nil {
 		log.Fatal("解析静态资源目录失败！", err)
 	}
@@ -48,11 +53,12 @@ func main() {
 	}
 	mux := http.NewServeMux() //创建路由分发器
 	//托管静态资源且支持视频Range请求
-	mux.Handle("/static/", http.FileServer(http.Dir(staticRoot)))
+	// http.StripPrefix去除URL路径钱买你没用的部分
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticRoot))))
 	mux.HandleFunc("/api/health", healthHandler)          //注册健康检查接口
 	mux.HandleFunc("/api/config", configHandler)          // 注册页面配置接口。
 	mux.HandleFunc("/api/map-points", mapPointsHandler)   //注册地图地点接口
-	mux.HandleFunc("/go/place", placeRedirectHandler)     //注册点击跳转接口
+	mux.HandleFunc("/go/place/", placeRedirectHandler)    //注册点击跳转接口
 	mux.HandleFunc("/place/", placePageHandler)           //注册详情网页接口
 	mux.HandleFunc("/go/sichuan", sichuanRedirectHandler) // 注册兼容旧入口的四川跳转接口
 	mux.HandleFunc("/", homeHandler)                      //注册首页
@@ -90,7 +96,7 @@ func pageData() PageConfig {
 	}
 }
 
-// 首页1
+// 首页1home.html没写
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r) //返回404
