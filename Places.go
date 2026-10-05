@@ -62,13 +62,15 @@ func placeRedirectHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "只允许 GET 请求", http.StatusMethodNotAllowed)
 		return
 	}
+	//r.URL.Path获取当前 HTTP 请求的 URL 路径部分，即你要访问的资源，网页等
 	id := extractPlaceID(r.URL.Path, "/go/place/") //提取ID
 	point, ok := findMapPoint(id)
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
-	http.Redirect(w, r, "/place/"+point.ID+"/", http.StatusNotFound)
+	//StatusNotFound 是 404，
+	http.Redirect(w, r, "/place/"+point.ID+"/", http.StatusFound)
 }
 func placePageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -83,7 +85,7 @@ func placePageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data := pageData()
 	data.CurrentPlace = point
-	renderTemplate(w, "place,html", data)
+	renderTemplate(w, "place.html", data)
 }
 func extractPlaceID(path string, prefix string) string {
 	return strings.Trim(strings.TrimPrefix(path, prefix), "/")
