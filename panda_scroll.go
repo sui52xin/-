@@ -1,10 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"math"
+	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // 熊猫的位置
@@ -116,8 +121,101 @@ func resolvePandaFrame(progress float64) PandaFrame {
 
 }
 
+// pandaScrollTemplate 解析滚动长卷模板，并注入一个把下标变成章节号的函数。
+// 解析成人能看懂的
 var pandaScrollTemplate = template.Must(
 	template.New("panda-scroll.html").
 		Funcs(template.FuncMap{"inc": func(n int) int { return n + 1 }}).
 		ParseFiles("./templates/panda.html"),
 )
+
+// 分镜渲染成可滚动
+func pandaScrollHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	shots := pandaTimeline() //取数据
+	if err := validatePandaTimeline(shots); err != nil {
+		log.Println("panda timeline invalid:%v", err)
+		http.Error(w, "panda timeline invalid", http.StatusInternalServerError)
+		return
+	}
+	encoded, err := json.Marshal(shots) //编译成json
+	if err != nil {
+		log.Println("panda timeline marshal error:%v", err)
+		http.Error(w, "panda timeline marshal error", http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		PageTitle string
+		PandaImg  string
+		Shots     []PandaShot
+		ShotsJSON template.JS
+	}{
+		PageTitle: "熊猫往前走!",
+		PandaImg:  "/static/img/panda.svg",
+		Shots:     shots,
+		ShotsJSON: template.JS(encoded),
+	}
+	//返回一个UTF-8编码的HTML的模板
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	//设置响应头
+	if err1 := pandaScrollTemplate.Execute(w, data); err1 != nil {
+		log.Println("panda scroll template execute error:%v", err1)
+	}
+}
+
+// 把分镜用JSON返回
+func pandaTimelineAPI(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if err := json.NewEncoder(w).Encode(map[string]any{ //any=interface
+		"pandaTmage": "/static/media/panda.svg",
+		"shots":      pandaTimeline(), //取数据和 PandaScrollHander 同一份数据
+
+	}); err != nil {
+		log.Println("panda timeline json marshal error:%v", err)
+	}
+}
+func pandaFrameAPI(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	raw := r.URL.Query().Get("progress")
+	progress, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		http.Error(w, "progress 必须是 0~1 的小数", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	frame := resolvePandaFrame(progress) //进度解算为动画帧
+	//用于将数据结构序列化为 JSON 并直接写入 HTTP 响应流。
+	if err1 := json.NewEncoder(w).Encode(frame); err1 != nil {
+		log.Println("panda frame json marshal error:%v", err1)
+	}
+}
+
+// 中间件
+func withRequestLog(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		log.Println("%s %s %s", r.Method, r.URL, time.Since(start)) //处理耗时
+	})
+}
+
+// registerPandaScrollRoutes 把滚动长卷相关的路由注册到传入的 mux 上
+func registerPandaScrollRoutes(mux *http.ServeMux) {
+	// http.ServeMux 是 net/http 标准库提供的路由多路复用器。
+	mux.HandleFunc("/panda-scroll", pandaScrollHandler)
+	mux.HandleFunc("/api/panda-frame", pandaFrameAPI)
+	mux.HandleFunc("/api/panda-timeline", pandaTimelineAPI)
+}

@@ -32,6 +32,13 @@ type PageConfig struct {
 // 第 32 行修改为：
 var pageTemplates = template.Must(template.ParseFiles("index.html", "about.html", "template.html")) // 保存已经加载的 HTML 模板。
 func main() {
+	mux1 := http.NewServeMux()
+	registerPandaScrollRoutes(mux1)
+	server1 := &http.Server{
+		Addr:        "8080",
+		Handler:     withRequestLog(mux1), //日志中间件包裹
+		ReadTimeout: 5 * time.Second,
+	}
 	port := os.Getenv("PORT") //读取环境变量
 	if port == "" {
 		port = defaultPort //默认
