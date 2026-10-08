@@ -1,309 +1,1418 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
-=======
->>>>>>> f910622a6e548be4d2a73ba4f4b848b2d36b11c2
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>熊猫主题网站 - 框架</title>
-
+  <title>川峡四路 · 小火车之旅</title>
   <style>
-    /* ==========================================
-       1. 基础重置 & 全局设定
-       ========================================== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box; /* 让 padding 不会撑大盒子 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      height: 1200vh;   /* 6 个阶段，滚动空间拉长 */
+      background: #f4efe4;
+      font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+      overflow-x: hidden;
     }
 
-    body {
-      font-family: "Microsoft YaHei", sans-serif;
-      background-color: #f4f4f4; /* 页面灰背景 */
-      color: #333;
-      padding: 20px;
-      line-height: 1.6;
-    }
-
-    /* 统一给所有区块加个虚线边框，方便你看结构。做完后删掉即可 */
-    .box {
-      border: 2px dashed #666;
-      background-color: #fff;
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    /* ==========================================
-       2. 整个页面的三列大布局
-       ========================================== */
-    .page-container {
-      display: flex;
-      gap: 20px; /* 左、中、右三列之间的间距 */
-      max-width: 1400px; /* 最大宽度，防止超大屏幕拉太宽 */
-      margin: 0 auto; /* 页面居中 */
-      position: relative; /* 为了给底部的绝对定位线做参考 */
-      padding-bottom: 80px; /* 给底部“变化线”留出空间 */
-    }
-
-    /* 左侧主列 */
-    .left-column {
-      flex: 2; /* 占 2 份宽度 */
-      display: flex;
-      flex-direction: column; /* 里面的内容从上到下排列 */
-      gap: 20px;
-    }
-
-    /* 右侧区域（包含中间列和最右侧列） */
-    .right-area {
-      flex: 1.5;
-      display: flex;
-      gap: 20px;
-    }
-
-    /* 中间列 */
-    .middle-column {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* 最右侧列 */
-    .far-right-column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* ==========================================
-       3. 左侧具体内容
-       ========================================== */
-    /* 顶部大标题 */
-    .main-title {
-      height: 80px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    /* 图片+视频区域 */
-    .media-section {
-      display: flex;
-      gap: 15px;
-      height: 350px; /* 给一个固定高度，你可以按需改 */
-      align-items: stretch;
-    }
-
-    /* 左边大图 */
-    .media-image {
-      flex: 1.5;
-      height: 100%;
-      font-size: 18px;
-    }
-
-    /* 右边视频区（包含标题和视频） */
-    .media-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .media-right .small-title {
-      height: 50px;
-    }
-
-    .media-right .video-box {
-      flex: 1; /* 占满剩余高度 */
-    }
-
-    /* 另一个网页（悬浮块） */
-    .another-page {
-      height: 50px;
-      width: 70%; /* 宽度只占 70%，所以会浮在中间 */
-      margin: -25px auto 10px auto; /* 负 margin 让它往上跑一点，盖住上面的边 */
-      position: relative;
-      z-index: 2; /* 保证它在上方 */
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 加点阴影，显得立体 */
-    }
-
-    /* 四川地图区 */
-    .map-section {
-      height: 350px;
-      font-size: 18px;
-      position: relative; /* 为了以后放地图 API 用 */
-    }
-
-    /* ==========================================
-       4. 中间列 & 右侧列内容
-       ========================================== */
-    .origin-section {
-      height: 180px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    /* 二维码区域 */
-    .qr-section {
-      display: flex;
-      gap: 15px;
-      height: 150px;
-    }
-
-    .qr-left-placeholder {
-      flex: 2; /* 左边占大块 */
-    }
-
-    .qr-code {
-      flex: 1; /* 二维码占小块 */
-    }
-
-    /* 总结区 */
-    .summary-section {
-      height: 320px;
-      flex-direction: column;
-      gap: 20px;
-      font-size: 18px;
-    }
-
-    /* 最右侧底部的大空白框 */
-    .blank-section {
-      flex: 1; /* 自动撑满剩余高度 */
-      min-height: 300px;
-    }
-
-    /* ==========================================
-       5. 底部变化线 & 熊猫
-       ========================================== */
-    .bottom-line-wrapper {
-      position: absolute;
-      bottom: 20px;
+    #canvas {
+      position: fixed;
+      top: 0;
       left: 0;
-      width: 100%;
-      height: 4px;
-      background-color: #000;
-      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 1;
+      cursor: default;
     }
 
-    .panda-label {
-      position: absolute;
-      bottom: -15px;
-      left: 20px;
-      background-color: #f4f4f4;
-      padding: 0 10px;
-      font-weight: bold;
+    .hud {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 5px;
+      color: #3a3025;
+      background: rgba(244, 239, 228, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 10px 36px;
+      border-radius: 3px;
+      border: 1px solid rgba(90, 70, 50, 0.25);
+      z-index: 2;
+      box-shadow: 0 4px 20px rgba(60, 45, 30, 0.12);
+      white-space: nowrap;
+      transition: opacity 0.4s ease;
     }
 
-    /* 右侧的箭头 */
-    .arrow-right {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      border: solid black;
-      border-width: 0 4px 4px 0;
-      display: inline-block;
-      padding: 12px;
-      transform: translateY(-50%) rotate(-45deg);
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(to right, #8b6f47, #5a4632, #3a3025);
+      z-index: 3;
+      width: 0%;
     }
 
-    /* ==========================================
-       6. 响应式（手机端变成上下排列）
-       ========================================== */
-    @media (max-width: 900px) {
-      .page-container, .right-area, .media-section {
-        flex-direction: column; /* 全部变成上下排 */
-      }
-      
-      .another-page {
-        width: 100%; /* 手机上就不悬浮了，占满整行 */
-        margin: 10px 0;
-      }
-
-      .bottom-line-wrapper {
-        display: none; /* 手机上隐藏那条复杂的线 */
-      }
+    .scroll-hint {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: rgba(90, 70, 50, 0.55);
+      z-index: 2;
+      animation: breathe 2.4s ease-in-out infinite;
     }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+    .scroll-hint.hide { display: none; }
   </style>
 </head>
-
 <body>
 
-  <!-- 整个页面的大容器 -->
-  <div class="page-container">
+  <canvas id="canvas"></canvas>
+  <div class="hud" id="hud">川峡四路</div>
+  <div class="scroll-hint" id="scrollHint">↓ 向下滚动</div>
+  <div class="progress-bar" id="progressBar"></div>
 
-    <!-- ================= 左侧主列 ================= -->
-    <div class="left-column">
-      
-      <!-- 1. 顶部大标题 -->
-      <div class="box main-title">标题</div>
+  <script>
+    // ============================================================
+    // 配置区
+    // ============================================================
+    const USE_MOCK = true;
+    const API_URL  = 'http://localhost:8080/api/mappoints';
 
-      <!-- 2. 图片 + 视频区域 -->
-      <div class="box media-section">
-        <!-- 左边大图 -->
-        <div class="box media-image">图片</div>
-        
-        <!-- 右边视频区 -->
-        <div class="media-right">
-          <div class="box small-title">标题</div>
-          <div class="box video-box">视频</div>
-        </div>
-      </div>
+    // 每站多张图片
+    const MOCK_DATA = [
+      {
+        id: 'sanxingdui', name: '三星堆', x: 20, y: 50,
+        summary: '古蜀文明的神秘面纱，青铜神树参天而立，纵目面具凝视千年。',
+        description: '',
+        images: [
+          'https://picsum.photos/seed/sxd1/1400/700',
+          'https://picsum.photos/seed/sxd2/1400/700',
+          'https://picsum.photos/seed/sxd3/1400/700'
+        ]
+      },
+      {
+        id: 'jiuzhaigou', name: '九寨沟', x: 40, y: 50,
+        summary: '碧水如镜，倒映金山；彩林层叠，秋色满沟。',
+        description: '',
+        images: [
+          'https://picsum.photos/seed/jzg1/1400/700',
+          'https://picsum.photos/seed/jzg2/1400/700',
+          'https://picsum.photos/seed/jzg3/1400/700'
+        ]
+      },
+      {
+        id: 'emeishan', name: '峨眉山', x: 60, y: 50,
+        summary: '雪覆千峰，金顶凌空；一轮秋月，影入江流。',
+        description: '',
+        images: [
+          'https://picsum.photos/seed/ems1/1400/700',
+          'https://picsum.photos/seed/ems2/1400/700',
+          'https://picsum.photos/seed/ems3/1400/700'
+        ]
+      },
+      {
+        id: 'daocheng', name: '稻城亚丁', x: 80, y: 50,
+        summary: '碧草连天，清溪映雪；白云过境，人间净土。',
+        description: '',
+        images: [
+          'https://picsum.photos/seed/dc1/1400/700',
+          'https://picsum.photos/seed/dc2/1400/700',
+          'https://picsum.photos/seed/dc3/1400/700'
+        ]
+      }
+    ];
 
-      <!-- 3. 另一个网页（悬浮块） -->
-      <div class="box another-page">另一个网页</div>
+    // ============ 1. 基础 ============
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const hud = document.getElementById('hud');
+    const progressBar = document.getElementById('progressBar');
+    const scrollHint = document.getElementById('scrollHint');
 
-      <!-- 4. 四川地图 -->
-      <div class="box map-section">
-        四川地图 可以点
-      </div>
-      
-    </div>
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-    <!-- ================= 右侧区域（包含中间列 + 最右列） ================= -->
-    <div class="right-area">
+    // ============ 2. 站点数据 ============
+    let stops = [];
+    let dataReady = false;
 
-      <!-- 中间列 -->
-      <div class="middle-column">
-        
-        <!-- 起源 -->
-        <div class="box origin-section">起源</div>
+    async function loadStops() {
+      let data;
+      try {
+        if (USE_MOCK) {
+          await new Promise(r => setTimeout(r, 200));
+          data = MOCK_DATA;
+        } else {
+          const res = await fetch(API_URL);
+          if (!res.ok) throw new Error('接口返回 ' + res.status);
+          data = await res.json();
+        }
 
-        <!-- 二维码区域 -->
-        <div class="box qr-section">
-          <div class="box qr-left-placeholder"></div>
-          <div class="box qr-code">二维码</div>
-        </div>
+        stops = data.map(s => {
+          let imgList = [];
+          if (Array.isArray(s.images) && s.images.length) imgList = s.images;
+          else if (s.imageUrl) imgList = [s.imageUrl];
 
-      </div>
+          return {
+            id: s.id,
+            name: s.name,
+            x: (s.x ?? 0) / 100,
+            y: (s.y ?? 0) / 100,
+            desc: s.summary || s.description || '',
+            imgList,
+            images: [],
+            loaded: []
+          };
+        });
 
-      <!-- 最右侧列 -->
-      <div class="far-right-column">
-        
-        <!-- 总结提升 -->
-        <div class="box summary-section">
-          <div>总结</div>
-          <div>提升主题</div>
-        </div>
+        stops.sort((a, b) => a.x - b.x);
 
-        <!-- 最下方空白大框 -->
-        <div class="box blank-section"></div>
+        stops.forEach(stop => {
+          stop.imgList.forEach((url, idx) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = url;
+            stop.images[idx] = img;
+            stop.loaded[idx] = false;
+            img.onload = () => { stop.loaded[idx] = true; };
+          });
+        });
 
-      </div>
+        // 计算每个阶段的滚动区间
+        // 阶段 0：卷轴开场 0 ~ 0.10
+        // 阶段 1：三星堆   0.10 ~ 0.32
+        // 阶段 2：九寨沟   0.32 ~ 0.54
+        // 阶段 3：峨眉山   0.54 ~ 0.76
+        // 阶段 4：稻城亚丁 0.76 ~ 1.00
+        buildStageTimeline();
 
-    </div>
+        dataReady = true;
+      } catch (err) {
+        console.error(err);
+        hud.textContent = '加载失败';
+      }
+    }
 
-    <!-- ================= 底部跨整个页面的变化线 ================= -->
-    <div class="bottom-line-wrapper">
-      <span class="panda-label">熊猫</span>
-      <i class="arrow-right"></i>
-    </div>
+    // ============ 3. 阶段时间轴 ============
+    // 每个阶段：开场/进出场/停留
+    let timeline = [];
 
-  </div>
+    function buildStageTimeline() {
+      const N = stops.length;   // 4 站
+      // 总区间划分：开场 0~0.08；之后每站占 (1-0.08)/N，站内又分 进入/停留/出场
+      const introEnd = 0.08;
+      const perStation = (1 - introEnd) / N;
 
+      timeline = [];
+
+      // 阶段 0：卷轴
+      timeline.push({
+        type: 'intro',
+        start: 0,
+        end: introEnd,
+        stationIndex: -1
+      });
+
+      // 每站
+      for (let i = 0; i < N; i++) {
+        const segStart = introEnd + i * perStation;
+        const segEnd = segStart + perStation;
+
+        // 进场：从上一站到本站（第一站从"空白"进入）
+        const enterEnd = segStart + perStation * 0.35;
+        // 停留：展示场景
+        const stayEnd = segStart + perStation * 0.85;
+        // 出场：淡出到下一站
+        const exitEnd = segEnd;
+
+        timeline.push({
+          type: 'enter',
+          start: segStart,
+          end: enterEnd,
+          stationIndex: i
+        });
+        timeline.push({
+          type: 'stay',
+          start: enterEnd,
+          end: stayEnd,
+          stationIndex: i
+        });
+        timeline.push({
+          type: 'exit',
+          start: stayEnd,
+          end: exitEnd,
+          stationIndex: i
+        });
+      }
+    }
+
+    // 给定进度 t，返回当前阶段信息
+    function getStage(t) {
+      for (const seg of timeline) {
+        if (t >= seg.start && t < seg.end) {
+          const local = (t - seg.start) / (seg.end - seg.start);
+          return { ...seg, local };
+        }
+      }
+      // 最后一帧
+      const last = timeline[timeline.length - 1];
+      return { ...last, local: 1 };
+    }
+
+    // ============ 4. 通用工具 ============
+    function lerp(a, b, k) { return a + (b - a) * k; }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function easeInOut(t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+    // ============ 5. 图片轮播 ============
+    const imgStates = {}; // stationId -> { slot, timer }
+
+    function getImgState(stationId) {
+      if (!imgStates[stationId]) {
+        imgStates[stationId] = { slot: 0, timer: 0, alpha: 1, prevSlot: -1, prevAlpha: 0 };
+      }
+      return imgStates[stationId];
+    }
+
+    function updateImgState(stationId, totalImgs) {
+      const st = getImgState(stationId);
+      st.timer++;
+      if (st.timer > 240 && totalImgs > 1) { // 约 4 秒
+        st.timer = 0;
+        st.prevSlot = st.slot;
+        st.prevAlpha = st.alpha;
+        st.slot = (st.slot + 1) % totalImgs;
+        st.alpha = 0;
+      }
+      if (st.alpha < 1) st.alpha = Math.min(st.alpha + 0.02, 1);
+      if (st.prevAlpha > 0) st.prevAlpha = Math.max(st.prevAlpha - 0.02, 0);
+      return st;
+    }
+
+    // ============ 6. 阶段 0：卷轴开场 ============
+    // 流动的长江万里图背景 + 卷轴展开 + 苏轼行书
+    let scrollOpenProgress = 0;   // 0~1 卷轴打开进度（缓动后）
+
+    function drawIntroScene(t, local) {
+      // local 0~1 卷轴打开
+      const open = easeOut(clamp(local / 0.75, 0, 1));  // 前 75% 打开
+      scrollOpenProgress = open;
+
+      // ---------- 背景：长江万里图（简化的流动山水）----------
+      drawYangtzeScroll(t);
+
+      // ---------- 卷轴：从中间向两侧展开 ----------
+      const scrollH = canvas.height * 0.42;
+      const scrollY = canvas.height * 0.5 - scrollH / 2;
+      const fullW = canvas.width * 0.88;
+      const curW = fullW * open;
+      const scrollX = (canvas.width - curW) / 2;
+
+      // 卷轴阴影
+      ctx.save();
+      ctx.shadowColor = 'rgba(40, 30, 20, 0.4)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetY = 12;
+      ctx.fillStyle = '#f7f2e4';
+      ctx.fillRect(scrollX, scrollY, curW, scrollH);
+      ctx.restore();
+
+      // 卷轴纸纹
+      const paperGrad = ctx.createLinearGradient(0, scrollY, 0, scrollY + scrollH);
+      paperGrad.addColorStop(0, '#faf6ec');
+      paperGrad.addColorStop(0.5, '#f4eddc');
+      paperGrad.addColorStop(1, '#ede4d0');
+      ctx.fillStyle = paperGrad;
+      ctx.fillRect(scrollX, scrollY, curW, scrollH);
+
+      // 卷轴上下边框
+      ctx.strokeStyle = '#5a4632';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(scrollX, scrollY); ctx.lineTo(scrollX + curW, scrollY);
+      ctx.moveTo(scrollX, scrollY + scrollH); ctx.lineTo(scrollX + curW, scrollY + scrollH);
+      ctx.stroke();
+
+      // 左右卷轴轴心（圆木）
+      if (open > 0.05) {
+        drawScrollRod(scrollX, scrollY, scrollH, true);
+        drawScrollRod(scrollX + curW, scrollY, scrollH, false);
+      }
+
+      // ---------- 文字：苏轼行书"川峡四路" ----------
+      if (open > 0.4) {
+        const textAlpha = clamp((open - 0.4) / 0.5, 0, 1);
+        ctx.save();
+        ctx.globalAlpha = textAlpha;
+
+        // 主标题
+        ctx.font = 'bold 96px "STXingkai", "STKaiti", "KaiTi", serif';
+        ctx.fillStyle = '#1a1510';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.15)';
+        ctx.shadowBlur = 12;
+        ctx.fillText('川峡四路', canvas.width / 2, canvas.height * 0.5 - 10);
+        ctx.shadowBlur = 0;
+
+        // 副标题（小字）
+        ctx.font = '18px "STKaiti", "KaiTi", serif';
+        ctx.fillStyle = 'rgba(90, 70, 50, 0.75)';
+        ctx.fillText('—— 苏轼 · 行书 ——', canvas.width / 2, canvas.height * 0.5 + 60);
+
+        // 印章
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2 + 160, canvas.height * 0.5 + 70, 14, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(139, 46, 46, 0.85)';
+        ctx.fill();
+        ctx.font = 'bold 14px "STKaiti", serif';
+        ctx.fillStyle = '#faf6ec';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('苏', canvas.width / 2 + 160, canvas.height * 0.5 + 70);
+
+        ctx.restore();
+      }
+
+      // 提示
+      if (open > 0.85) {
+        scrollHint.classList.remove('hide');
+      } else {
+        scrollHint.classList.add('hide');
+      }
+    }
+
+    function drawScrollRod(x, y, h, isLeft) {
+      const rodW = 14;
+      const rodX = isLeft ? x - rodW : x;
+      const grad = ctx.createLinearGradient(rodX, 0, rodX + rodW, 0);
+      grad.addColorStop(0, '#8b6f47');
+      grad.addColorStop(0.5, '#5a4632');
+      grad.addColorStop(1, '#3a2a1a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(rodX, y - 8, rodW, h + 16);
+      // 两端圆头
+      ctx.beginPath();
+      ctx.arc(rodX + rodW / 2, y - 8, rodW / 2 + 1, 0, Math.PI * 2);
+      ctx.arc(rodX + rodW / 2, y + h + 8, rodW / 2 + 1, 0, Math.PI * 2);
+      ctx.fillStyle = '#3a2a1a';
+      ctx.fill();
+    }
+
+    // 流动的长江万里图
+    function drawYangtzeScroll(time) {
+      // 暖色古纸底
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#e8dfc8');
+      grad.addColorStop(0.5, '#d9cfb5');
+      grad.addColorStop(1, '#c9bfa2');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 多层流动山峦（缓慢横向移动）
+      const layers = [
+        { baseY: 0.42, amp: 0.06, speed: 0.02, color: 'rgba(120, 130, 120, 0.25)' },
+        { baseY: 0.52, amp: 0.08, speed: 0.04, color: 'rgba(90, 100, 95, 0.35)' },
+        { baseY: 0.62, amp: 0.07, speed: 0.06, color: 'rgba(60, 70, 70, 0.45)' },
+        { baseY: 0.72, amp: 0.06, speed: 0.09, color: 'rgba(40, 50, 55, 0.55)' }
+      ];
+
+      layers.forEach((L, li) => {
+        const baseY = L.baseY * canvas.height;
+        const amp = L.amp * canvas.height;
+        const offset = time * L.speed * 10;
+
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height);
+        for (let x = 0; x <= canvas.width + 20; x += 12) {
+          const wx = x + offset;
+          const y = baseY
+            - Math.sin(wx * 0.004 + li) * amp
+            - Math.sin(wx * 0.009 + li * 1.7) * amp * 0.5
+            - Math.sin(wx * 0.018 + li * 0.8) * amp * 0.25;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.closePath();
+        ctx.fillStyle = L.color;
+        ctx.fill();
+      });
+
+      // 江面（下部）
+      const riverGrad = ctx.createLinearGradient(0, canvas.height * 0.72, 0, canvas.height);
+      riverGrad.addColorStop(0, 'rgba(180, 195, 200, 0.5)');
+      riverGrad.addColorStop(1, 'rgba(130, 150, 160, 0.7)');
+      ctx.fillStyle = riverGrad;
+      ctx.fillRect(0, canvas.height * 0.72, canvas.width, canvas.height * 0.28);
+
+      // 江面波纹
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < 5; i++) {
+        const y = canvas.height * (0.76 + i * 0.045);
+        const off = (time * (0.5 + i * 0.3)) % 200;
+        ctx.beginPath();
+        for (let x = -200; x < canvas.width + 200; x += 40) {
+          const wx = x + off;
+          const wave = Math.sin(wx * 0.02 + i) * 3;
+          if (x === -200) ctx.moveTo(wx, y + wave);
+          else ctx.lineTo(wx, y + wave);
+        }
+        ctx.stroke();
+      }
+
+      // 远处小舟
+      const boatX = (time * 0.8) % (canvas.width + 100) - 50;
+      ctx.beginPath();
+      ctx.moveTo(boatX - 12, canvas.height * 0.80);
+      ctx.quadraticCurveTo(boatX, canvas.height * 0.80 - 6, boatX + 12, canvas.height * 0.80);
+      ctx.quadraticCurveTo(boatX, canvas.height * 0.80 + 3, boatX - 12, canvas.height * 0.80);
+      ctx.fillStyle = 'rgba(60, 50, 40, 0.6)';
+      ctx.fill();
+    }
+
+    // ============ 7. 阶段 1：三星堆（黑底 + 青铜神树）============
+    // 小芽 → 青铜树 的生长动画
+    function drawSanxingduiScene(t, local, station) {
+      // 黑底
+      ctx.fillStyle = '#050608';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 生长进度：进入阶段前 60% 内完成生长
+      let growth = 0;
+      if (local < 0.6) growth = easeOut(local / 0.6);
+      else growth = 1;
+
+      // 三星堆位置（画布中央）
+      const treeX = canvas.width * 0.5;
+      const treeBaseY = canvas.height * 0.86;
+      const treeMaxH = canvas.height * 0.55;
+
+      // 暖金色光晕从底部扩散
+      const haloR = canvas.width * 0.4 * growth;
+      const halo = ctx.createRadialGradient(treeX, treeBaseY, 0, treeX, treeBaseY, haloR);
+      halo.addColorStop(0, `rgba(200, 160, 80, ${0.18 * growth})`);
+      halo.addColorStop(1, 'rgba(200, 160, 80, 0)');
+      ctx.fillStyle = halo;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 绘制青铜神树
+      drawBronzeTree(treeX, treeBaseY, treeMaxH, growth, t);
+
+      // 顶部横屏轮播图
+      if (growth > 0.5) {
+        const bannerAlpha = clamp((growth - 0.5) / 0.5, 0, 1);
+        drawBannerImages(station, bannerAlpha);
+      }
+
+      // 描述文字（左下）
+      if (growth > 0.7) {
+        const textAlpha = clamp((growth - 0.7) / 0.3, 0, 1);
+        drawLeftDescription(station.desc, textAlpha, '三星堆');
+      }
+    }
+
+    // 青铜神树
+    function drawBronzeTree(cx, baseY, maxH, growth, time) {
+      if (growth <= 0) return;
+
+      ctx.save();
+      ctx.translate(cx, baseY);
+
+      const trunkH = maxH * growth;
+      const trunkW = 14 * growth;
+      const goldGrad = ctx.createLinearGradient(0, -trunkH, 0, 0);
+      goldGrad.addColorStop(0, '#d4a843');
+      goldGrad.addColorStop(0.5, '#b88c30');
+      goldGrad.addColorStop(1, '#8a6820');
+
+      // 三层枝条，每层 3 根，形成"三层九枝"
+      const levels = [
+        { y: -trunkH * 0.35, len: trunkH * 0.30, count: 3 },
+        { y: -trunkH * 0.60, len: trunkH * 0.26, count: 3 },
+        { y: -trunkH * 0.85, len: trunkH * 0.22, count: 3 }
+      ];
+
+      // 主干
+      ctx.beginPath();
+      ctx.moveTo(-trunkW / 2, 0);
+      ctx.quadraticCurveTo(-trunkW / 3, -trunkH * 0.5, -trunkW / 4, -trunkH);
+      ctx.lineTo(trunkW / 4, -trunkH);
+      ctx.quadraticCurveTo(trunkW / 3, -trunkH * 0.5, trunkW / 2, 0);
+      ctx.closePath();
+      ctx.fillStyle = goldGrad;
+      ctx.fill();
+
+      // 枝条
+      levels.forEach((lv, li) => {
+        const levelGrow = clamp((growth - li * 0.15) / 0.4, 0, 1);
+        if (levelGrow <= 0) return;
+
+        for (let i = 0; i < lv.count; i++) {
+          const angle = -Math.PI / 2 + (i - 1) * 0.7 + (li % 2 === 0 ? 0 : 0.35);
+          const len = lv.len * levelGrow;
+          const endX = Math.cos(angle) * len;
+          const endY = lv.y + Math.sin(angle) * len * 0.6;
+
+          // 枝条
+          ctx.beginPath();
+          ctx.moveTo(0, lv.y);
+          ctx.quadraticCurveTo(endX * 0.5, lv.y - len * 0.2, endX, endY);
+          ctx.strokeStyle = `rgba(212, 168, 67, ${0.85 * levelGrow})`;
+          ctx.lineWidth = 4 * growth;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          // 枝头花朵/小鸟（金色光点）
+          const flowerGlow = 0.6 + Math.sin(time * 0.05 + i + li) * 0.4;
+          ctx.beginPath();
+          ctx.arc(endX, endY, 4 * levelGrow, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 215, 120, ${flowerGlow * levelGrow})`;
+          ctx.shadowColor = 'rgba(255, 200, 80, 0.9)';
+          ctx.shadowBlur = 12;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      });
+
+      // 树顶神鸟
+      if (growth > 0.9) {
+        const topGrow = clamp((growth - 0.9) / 0.1, 0, 1);
+        ctx.beginPath();
+        ctx.arc(0, -trunkH, 6 * topGrow, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 230, 150, ${topGrow})`;
+        ctx.shadowColor = 'rgba(255, 200, 80, 1)';
+        ctx.shadowBlur = 20;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.restore();
+    }
+
+    // 顶部横屏轮播图（通用）
+    function drawBannerImages(station, alpha) {
+      const st = updateImgState(station.id, station.images.length);
+      const bannerW = Math.min(1100, canvas.width * 0.72);
+      const bannerH = bannerW * 0.24;
+      const bannerX = (canvas.width - bannerW) / 2;
+      const bannerY = 30;
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      // 装裱外框
+      const pad = 10;
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 8;
+      ctx.beginPath();
+      ctx.roundRect(bannerX - pad, bannerY - pad, bannerW + pad * 2, bannerH + pad * 2, 4);
+      ctx.fillStyle = '#faf6ec';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // 内框
+      ctx.strokeStyle = 'rgba(90, 70, 50, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bannerX - pad + 4, bannerY - pad + 4, bannerW + pad * 2 - 8, bannerH + pad * 2 - 8);
+
+      // 图片
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(bannerX, bannerY, bannerW, bannerH);
+      ctx.clip();
+
+      // 上一张淡出
+      if (st.prevSlot >= 0 && st.prevAlpha > 0) {
+        const pimg = station.images[st.prevSlot];
+        if (pimg && station.loaded[st.prevSlot]) {
+          ctx.globalAlpha = alpha * st.prevAlpha;
+          drawCoverImg(pimg, bannerX, bannerY, bannerW, bannerH);
+        }
+      }
+      // 当前
+      const cimg = station.images[st.slot];
+      if (cimg && station.loaded[st.slot]) {
+        ctx.globalAlpha = alpha * st.alpha;
+        drawCoverImg(cimg, bannerX, bannerY, bannerW, bannerH);
+        ctx.globalAlpha = alpha * st.alpha * 0.12;
+        ctx.fillStyle = '#c9a878';
+        ctx.fillRect(bannerX, bannerY, bannerW, bannerH);
+      }
+
+      // 底部压暗
+      const grad = ctx.createLinearGradient(0, bannerY + bannerH - 50, 0, bannerY + bannerH);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.6)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(bannerX, bannerY + bannerH - 50, bannerW, 50);
+
+      ctx.restore();
+
+      // 站名（右下）
+      ctx.font = 'bold 26px "STKaiti", "KaiTi", serif';
+      ctx.fillStyle = '#faf6ec';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur = 6;
+      ctx.fillText(station.name, bannerX + bannerW - 20, bannerY + bannerH - 12);
+      ctx.shadowBlur = 0;
+
+      ctx.restore();
+
+      // 轮播指示点
+      if (station.images.length > 1) {
+        const dotY = bannerY + bannerH + pad + 14;
+        const dotStartX = canvas.width / 2 - (station.images.length - 1) * 8;
+        station.images.forEach((_, i) => {
+          ctx.beginPath();
+          ctx.arc(dotStartX + i * 16, dotY, 3, 0, Math.PI * 2);
+          ctx.fillStyle = i === st.slot
+            ? `rgba(139, 46, 46, ${alpha})`
+            : `rgba(90, 70, 50, ${alpha * 0.35})`;
+          ctx.fill();
+        });
+      }
+    }
+
+    // 左下描述
+    function drawLeftDescription(text, alpha, title) {
+      if (!text) return;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      const x = 60;
+      const y = canvas.height - 220;
+      const maxW = Math.min(420, canvas.width * 0.34);
+
+      // 标题
+      ctx.font = 'bold 30px "STKaiti", "KaiTi", serif';
+      ctx.fillStyle = '#d4a843';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(title, x, y - 44);
+
+      // 装饰线
+      ctx.beginPath();
+      ctx.moveTo(x, y - 6);
+      ctx.lineTo(x + 60, y - 6);
+      ctx.strokeStyle = 'rgba(212, 168, 67, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 正文
+      ctx.font = '17px "STKaiti", "KaiTi", serif';
+      ctx.fillStyle = 'rgba(230, 225, 210, 0.92)';
+      const charsPerLine = Math.floor(maxW / 17);
+      const lines = [];
+      for (let k = 0; k < text.length; k += charsPerLine) {
+        lines.push(text.slice(k, k + charsPerLine));
+      }
+      lines.forEach((line, i) => {
+        ctx.fillText(line, x, y + i * 26);
+      });
+
+      ctx.restore();
+    }
+
+    // ============ 8. 阶段 2：九寨沟 ============
+    // 背景：碧绿湖水 + 金山树 + 远山彩林，随火车移动
+    function drawJiuzhaigouScene(t, local, trainOffset) {
+      // 天空
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGrad.addColorStop(0, '#cfe4e8');
+      skyGrad.addColorStop(0.4, '#e0e8d8');
+      skyGrad.addColorStop(1, '#f0e8d0');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 视差移动量
+      const px = trainOffset * canvas.width * 0.06;
+
+      // 远山（褐 + 彩林）
+      drawJiuzhaiMountains(px, t);
+
+      // 湖面
+      drawJiuzhaiLake(px, t);
+
+      // 左侧描述
+      drawLeftDescription(
+        '碧绿的湖水如镜，倒映着金灿灿的山树。远山层叠，彩林攀附，秋意正浓。',
+        1, '九寨沟'
+      );
+    }
+
+    function drawJiuzhaiMountains(px, time) {
+      // 三层褐色山
+      const layers = [
+        { y: 0.40, amp: 0.10, color1: '#8a7a55', color2: '#6b5f42', speed: 1.0 },
+        { y: 0.52, amp: 0.09, color1: '#6f6042', color2: '#544830', speed: 1.4 },
+        { y: 0.62, amp: 0.08, color1: '#554a32', color2: '#3d3524', speed: 1.8 }
+      ];
+
+      layers.forEach((L, li) => {
+        const baseY = L.y * canvas.height;
+        const amp = L.amp * canvas.height;
+        const offset = px * L.speed;
+
+        ctx.beginPath();
+        ctx.moveTo(-50, canvas.height);
+        for (let x = -50; x <= canvas.width + 50; x += 15) {
+          const wx = x + offset;
+          const y = baseY
+            - Math.sin(wx * 0.006 + li) * amp
+            - Math.sin(wx * 0.013 + li * 1.7) * amp * 0.5;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(canvas.width + 50, canvas.height);
+        ctx.closePath();
+
+        const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + amp * 2);
+        grad.addColorStop(0, L.color1);
+        grad.addColorStop(1, L.color2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 彩林：在山腰点缀金色/绿色树丛
+        for (let i = 0; i < 22; i++) {
+          const seedX = ((i * 137 + li * 53) % 1000) / 1000;
+          const tx = (seedX * (canvas.width + 200) - 100 + offset * 0.6);
+          const wx = tx - offset;
+          const ty = baseY
+            - Math.sin(wx * 0.006 + li) * amp
+            - Math.sin(wx * 0.013 + li * 1.7) * amp * 0.5;
+          const treeColor = (i % 3 === 0)
+            ? 'rgba(212, 168, 67, 0.75)'   // 金
+            : (i % 3 === 1)
+              ? 'rgba(120, 140, 70, 0.7)'  // 绿
+              : 'rgba(160, 120, 50, 0.7)'; // 褐金
+          drawTreeCluster(tx, ty + 4, 12 + (i % 5) * 3, treeColor);
+        }
+      });
+    }
+
+    function drawTreeCluster(x, y, size, color) {
+      ctx.beginPath();
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x - size * 0.5, y);
+      ctx.lineTo(x + size * 0.5, y);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    function drawJiuzhaiLake(px, time) {
+      const lakeY = canvas.height * 0.68;
+      const grad = ctx.createLinearGradient(0, lakeY, 0, canvas.height);
+      grad.addColorStop(0, '#4a8a7a');
+      grad.addColorStop(0.5, '#3a7a6a');
+      grad.addColorStop(1, '#2a5a4a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, lakeY, canvas.width, canvas.height - lakeY);
+
+      // 倒影：金色山树
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, lakeY, canvas.width, canvas.height - lakeY);
+      ctx.clip();
+      ctx.globalAlpha = 0.35;
+      // 金色光斑
+      for (let i = 0; i < 30; i++) {
+        const seedX = ((i * 173) % 1000) / 1000;
+        const rx = seedX * canvas.width;
+        const ry = lakeY + 20 + (i % 5) * 24;
+        const r = 8 + (i % 4) * 6;
+        const g = ctx.createRadialGradient(rx, ry, 0, rx, ry, r);
+        g.addColorStop(0, 'rgba(230, 200, 120, 0.6)');
+        g.addColorStop(1, 'rgba(230, 200, 120, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(rx, ry, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
+
+      // 湖面波纹
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i++) {
+        const y = lakeY + 25 + i * 22;
+        const off = (time * (0.4 + i * 0.2) + px * 0.3) % 200;
+        ctx.beginPath();
+        for (let x = -200; x < canvas.width + 200; x += 30) {
+          const wx = x + off;
+          const wave = Math.sin(wx * 0.015 + i) * 2;
+          if (x === -200) ctx.moveTo(wx, y + wave);
+          else ctx.lineTo(wx, y + wave);
+        }
+        ctx.stroke();
+      }
+    }
+
+    // ============ 9. 阶段 3：峨眉山 ============
+    function drawEmeishanScene(t, local, station) {
+      // 雪景天空（冷蓝）
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGrad.addColorStop(0, '#8fa8bf');
+      skyGrad.addColorStop(0.5, '#c8d8e0');
+      skyGrad.addColorStop(1, '#e8eef2');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 远山雪峰
+      drawSnowMountains(t);
+
+      // 雪树
+      drawSnowTrees(t);
+
+      // 飘雪
+      drawSnowflakes(t);
+
+      // 左侧竖排诗句
+      drawVerticalPoem('峨眉山月半轮秋', '影入平羌江水流', 1);
+
+      // 顶部轮播图
+      drawBannerImages(station, 1);
+    }
+
+    function drawSnowMountains(time) {
+      const layers = [
+        { y: 0.45, amp: 0.10, c1: '#d8e2ea', c2: '#a8b8c8' },
+        { y: 0.55, amp: 0.09, c1: '#c0cdd8', c2: '#8fa0b0' },
+        { y: 0.65, amp: 0.08, c1: '#a8b5c0', c2: '#788898' }
+      ];
+      layers.forEach((L, li) => {
+        const baseY = L.y * canvas.height;
+        const amp = L.amp * canvas.height;
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height);
+        for (let x = 0; x <= canvas.width + 20; x += 15) {
+          const y = baseY
+            - Math.sin(x * 0.005 + li) * amp
+            - Math.sin(x * 0.011 + li * 1.7) * amp * 0.5;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.closePath();
+        const grad = ctx.createLinearGradient(0, baseY - amp, 0, baseY + amp * 2);
+        grad.addColorStop(0, L.c1);
+        grad.addColorStop(1, L.c2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+    }
+
+    function drawSnowTrees(time) {
+      // 几棵挂雪的树
+      const positions = [0.15, 0.35, 0.62, 0.85];
+      positions.forEach((px, i) => {
+        const x = px * canvas.width;
+        const y = canvas.height * 0.78;
+        drawSnowTree(x, y, 60 + i * 12);
+      });
+    }
+
+    function drawSnowTree(x, y, h) {
+      // 树干
+      ctx.beginPath();
+      ctx.moveTo(x - 4, y);
+      ctx.lineTo(x + 4, y);
+      ctx.lineTo(x + 2, y - h * 0.4);
+      ctx.lineTo(x - 2, y - h * 0.4);
+      ctx.closePath();
+      ctx.fillStyle = '#5a4a38';
+      ctx.fill();
+
+      // 三层雪枝
+      const layers = [
+        { y: y - h * 0.35, w: h * 0.5 },
+        { y: y - h * 0.62, w: h * 0.38 },
+        { y: y - h * 0.85, w: h * 0.26 }
+      ];
+      layers.forEach(L => {
+        ctx.beginPath();
+        ctx.moveTo(x, L.y - h * 0.12);
+        ctx.lineTo(x - L.w / 2, L.y);
+        ctx.lineTo(x + L.w / 2, L.y);
+        ctx.closePath();
+        ctx.fillStyle = '#6a5a48';
+        ctx.fill();
+
+        // 雪覆盖
+        ctx.beginPath();
+        ctx.moveTo(x, L.y - h * 0.12);
+        ctx.lineTo(x - L.w / 2, L.y);
+        ctx.lineTo(x - L.w / 2 + 6, L.y + 3);
+        ctx.lineTo(x, L.y - h * 0.08);
+        ctx.lineTo(x + L.w / 2 - 6, L.y + 3);
+        ctx.lineTo(x + L.w / 2, L.y);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(250, 250, 255, 0.92)';
+        ctx.fill();
+      });
+    }
+
+    const snowflakes = [];
+    (function initSnow() {
+      for (let i = 0; i < 80; i++) {
+        snowflakes.push({
+          x: Math.random(),
+          y: Math.random(),
+          r: Math.random() * 2 + 1,
+          speed: Math.random() * 0.0008 + 0.0004,
+          drift: Math.random() * 0.5 - 0.25
+        });
+      }
+    })();
+
+    function drawSnowflakes(time) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      snowflakes.forEach(f => {
+        const y = ((f.y + time * f.speed) % 1) * canvas.height;
+        const x = (f.x + Math.sin(time * 0.001 + f.x * 10) * 0.01 + f.drift * 0.01) * canvas.width;
+        ctx.beginPath();
+        ctx.arc(x, y, f.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // 竖排诗句
+    function drawVerticalPoem(line1, line2, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      const x = canvas.width * 0.10;
+      const startY = canvas.height * 0.28;
+      const fontSize = 34;
+      const lineGap = 60;
+
+      ctx.font = `bold ${fontSize}px "STKaiti", "KaiTi", serif`;
+      ctx.fillStyle = '#1a2530';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(255,255,255,0.6)';
+      ctx.shadowBlur = 8;
+
+      // 第一列
+      [...line1].forEach((ch, i) => {
+        ctx.fillText(ch, x, startY + i * lineGap);
+      });
+      // 第二列
+      [...line2].forEach((ch, i) => {
+        ctx.fillText(ch, x + lineGap, startY + i * lineGap);
+      });
+
+      // 红色印章
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.rect(x - 12, startY + line1.length * lineGap + 10, 24, 24);
+      ctx.fillStyle = 'rgba(139, 46, 46, 0.85)';
+      ctx.fill();
+      ctx.font = '14px "STKaiti", serif';
+      ctx.fillStyle = '#faf6ec';
+      ctx.fillText('印', x, startY + line1.length * lineGap + 22);
+
+      ctx.restore();
+    }
+
+    // ============ 10. 阶段 4：稻城亚丁 ============
+    function drawDaochengScene(t, local, station) {
+      // 蓝天
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.6);
+      skyGrad.addColorStop(0, '#5aa8d8');
+      skyGrad.addColorStop(0.6, '#9cc8e0');
+      skyGrad.addColorStop(1, '#d8e8f0');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height * 0.6);
+
+      // 白云
+      drawWhiteClouds(t);
+
+      // 远山（苍白雪山）
+      drawPaleMountains(t);
+
+      // 草地
+      const grassY = canvas.height * 0.62;
+      const grassGrad = ctx.createLinearGradient(0, grassY, 0, canvas.height);
+      grassGrad.addColorStop(0, '#8fc466');
+      grassGrad.addColorStop(1, '#5a9040');
+      ctx.fillStyle = grassGrad;
+      ctx.fillRect(0, grassY, canvas.width, canvas.height - grassY);
+
+      // 草地纹理
+      for (let i = 0; i < 40; i++) {
+        const gx = ((i * 173) % 1000) / 1000 * canvas.width;
+        const gy = grassY + ((i * 97) % 1000) / 1000 * (canvas.height - grassY);
+        ctx.beginPath();
+        ctx.arc(gx, gy, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.fill();
+      }
+
+      // 浅浅的河水（横贯）
+      drawShallowRiver(t);
+
+      // 顶部轮播图
+      drawBannerImages(station, 1);
+    }
+
+    function drawWhiteClouds(time) {
+      const clouds = [
+        { x: 0.15, y: 0.12, s: 1.0 },
+        { x: 0.55, y: 0.08, s: 0.85 },
+        { x: 0.82, y: 0.18, s: 1.1 }
+      ];
+      clouds.forEach(c => {
+        const cx = ((c.x + time * 0.00008) % 1.2 - 0.1) * canvas.width;
+        const cy = c.y * canvas.height;
+        drawCloud(cx, cy, 60 * c.s);
+      });
+    }
+
+    function drawCloud(x, y, r) {
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.5, 0, Math.PI * 2);
+      ctx.arc(x + r * 0.5, y - r * 0.15, r * 0.6, 0, Math.PI * 2);
+      ctx.arc(x + r * 1.0, y, r * 0.45, 0, Math.PI * 2);
+      ctx.arc(x + r * 0.5, y + r * 0.15, r * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawPaleMountains(time) {
+      const baseY = canvas.height * 0.58;
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height);
+      for (let x = 0; x <= canvas.width + 20; x += 15) {
+        const y = baseY
+          - Math.sin(x * 0.004) * canvas.height * 0.08
+          - Math.sin(x * 0.009) * canvas.height * 0.05;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(0, baseY - canvas.height * 0.1, 0, baseY + canvas.height * 0.1);
+      grad.addColorStop(0, '#f0f4f8');
+      grad.addColorStop(0.5, '#d0dae0');
+      grad.addColorStop(1, '#a8b8c0');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    function drawShallowRiver(time) {
+      const riverY = canvas.height * 0.78;
+      const riverH = canvas.height * 0.06;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0, riverY);
+      for (let x = 0; x <= canvas.width + 20; x += 20) {
+        const y = riverY + Math.sin(x * 0.006) * 8;
+        ctx.lineTo(x, y);
+      }
+      for (let x = canvas.width; x >= 0; x -= 20) {
+        const y = riverY + riverH + Math.sin(x * 0.006 + 1) * 8;
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(0, riverY, 0, riverY + riverH);
+      grad.addColorStop(0, 'rgba(180, 210, 230, 0.85)');
+      grad.addColorStop(1, 'rgba(130, 170, 200, 0.85)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // 波光
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        const yy = riverY + riverH * (0.3 + i * 0.25);
+        const off = (time * (0.5 + i * 0.3)) % 100;
+        for (let x = -100; x < canvas.width + 100; x += 25) {
+          const wx = x + off;
+          const wave = Math.sin(wx * 0.03 + i) * 1.5;
+          if (x === -100) ctx.moveTo(wx, yy + wave);
+          else ctx.lineTo(wx, yy + wave);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // ============ 11. 小火车 ============
+    // 火车位置：进入阶段从左侧滑入，停留阶段停在左侧，出场阶段滑出
+    function drawTrainAt(x, y, dir, smokePhase) {
+      ctx.save();
+      ctx.translate(x, y);
+      const SCALE = 1.0;
+      ctx.scale(SCALE, SCALE);
+      if (dir < 0) ctx.scale(-1, 1);
+
+      // 阴影
+      const shadow = ctx.createRadialGradient(0, 18, 0, 0, 18, 45);
+      shadow.addColorStop(0, 'rgba(0,0,0,0.25)');
+      shadow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.beginPath();
+      ctx.ellipse(0, 18, 44, 12, 0, 0, Math.PI * 2);
+      ctx.fillStyle = shadow;
+      ctx.fill();
+
+      // 轮子
+      [-20, 0, 20].forEach(wx => {
+        ctx.beginPath();
+        ctx.arc(wx, 13, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#2a2218';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(wx, 13, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#e8dfd0';
+        ctx.fill();
+      });
+
+      // 车身
+      const bodyW = 60, bodyH = 26;
+      const bodyX = -bodyW / 2, bodyY = -bodyH / 2 + 2;
+      const bg = ctx.createLinearGradient(0, bodyY, 0, bodyY + bodyH);
+      bg.addColorStop(0, '#4a3f30');
+      bg.addColorStop(0.5, '#3a3025');
+      bg.addColorStop(1, '#2a2218');
+      ctx.beginPath();
+      ctx.roundRect(bodyX, bodyY, bodyW, bodyH, 6);
+      ctx.fillStyle = bg;
+      ctx.fill();
+      ctx.strokeStyle = '#5a4632';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 朱红装饰
+      ctx.beginPath();
+      ctx.moveTo(bodyX + 4, bodyY + bodyH - 6);
+      ctx.lineTo(bodyX + bodyW - 4, bodyY + bodyH - 6);
+      ctx.strokeStyle = '#8b2e2e';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 烟囱
+      ctx.beginPath();
+      ctx.roundRect(13, bodyY - 11, 11, 13, 2);
+      ctx.fillStyle = '#2a2218';
+      ctx.fill();
+
+      // 车窗
+      ctx.beginPath();
+      ctx.roundRect(bodyX + 6, bodyY + 6, 14, 11, 2);
+      ctx.fillStyle = 'rgba(230, 220, 195, 0.9)';
+      ctx.fill();
+      ctx.strokeStyle = '#5a4632';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // 前灯
+      ctx.beginPath();
+      ctx.arc(bodyX + bodyW - 5, bodyY + bodyH / 2, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#d4a843';
+      ctx.fill();
+
+      // 冒烟
+      for (let i = 0; i < 3; i++) {
+        const p = (smokePhase + i / 3) % 1;
+        const sx = 18 + p * 12;
+        const sy = bodyY - 13 - p * 30;
+        const r = 5 + p * 11;
+        const a = (1 - p) * 0.28;
+        const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+        sg.addColorStop(0, `rgba(80, 70, 60, ${a})`);
+        sg.addColorStop(1, 'rgba(80, 70, 60, 0)');
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = sg;
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // ============ 12. 主渲染 ============
+    let smokePhase = 0;
+    let time = 0;
+
+    function render() {
+      if (!dataReady) return;
+
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const t = maxScroll > 0 ? Math.min(scrollTop / maxScroll, 1) : 0;
+
+      const stage = getStage(t);
+      const station = stage.stationIndex >= 0 ? stops[stage.stationIndex] : null;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // ---------- 按阶段绘制 ----------
+      if (stage.type === 'intro') {
+        // 阶段 0：卷轴开场
+        hud.textContent = '川峡四路';
+        drawIntroScene(time, stage.local);
+
+      } else if (stage.type === 'enter') {
+        // 进场：从上一站场景淡入到本站场景
+        // 本站场景的进入进度 0~1
+        const enterP = stage.local;
+
+        if (stage.stationIndex === 0) {
+          // 第一站：从空白进入三星堆
+          ctx.fillStyle = `rgba(0, 0, 0, ${enterP})`;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          drawSanxingduiScene(time, enterP, station);
+        } else {
+          // 其他站：正常进入
+          drawSceneByIndex(stage.stationIndex, time, enterP, station);
+        }
+
+        hud.textContent = `前往 · ${station.name}`;
+
+      } else if (stage.type === 'stay') {
+        // 停留：完整展示本站场景
+        drawSceneByIndex(stage.stationIndex, time, 1, station);
+        hud.textContent = `当前 · ${station.name}`;
+
+      } else if (stage.type === 'exit') {
+        // 出场：淡出
+        const exitP = 1 - stage.local;
+        ctx.save();
+        ctx.globalAlpha = exitP;
+        drawSceneByIndex(stage.stationIndex, time, 1, station);
+        ctx.restore();
+
+        hud.textContent = `离开 · ${station.name}`;
+      }
+
+      // ---------- 火车 ----------
+      if (stage.type !== 'intro') {
+        // 火车停靠位置：偏左下
+        const trainX = canvas.width * 0.16;
+        const trainY = canvas.height * 0.88;
+        // 进场从左侧滑入
+        let offsetX = 0;
+        if (stage.type === 'enter') {
+          offsetX = -canvas.width * 0.3 * (1 - easeOut(stage.local));
+        } else if (stage.type === 'exit') {
+          offsetX = canvas.width * 0.3 * easeOut(stage.local);
+        }
+        drawTrainAt(trainX + offsetX, trainY, 1, smokePhase);
+      }
+
+      // 进度条
+      progressBar.style.width = (t * 100) + '%';
+    }
+
+    function drawSceneByIndex(idx, time, alpha, station) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      if (idx === 0) {
+        drawSanxingduiScene(time, alpha, station);
+      } else if (idx === 1) {
+        drawJiuzhaigouScene(time, alpha, 0.5);
+      } else if (idx === 2) {
+        drawEmeishanScene(time, alpha, station);
+      } else if (idx === 3) {
+        drawDaochengScene(time, alpha, station);
+      }
+
+      ctx.restore();
+    }
+
+    function loop() {
+      smokePhase = (smokePhase + 0.004) % 1;
+      time += 0.5;
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    // ============ 13. 交互 ============
+    // 左右方向键 / 触屏滑动切换图片
+    function switchImage(direction) {
+      if (!dataReady) return;
+      const t = getCurrentT();
+      const stage = getStage(t);
+      if (stage.stationIndex < 0) return;
+      const station = stops[stage.stationIndex];
+      const st = getImgState(station.id);
+      const total = station.images.length;
+      if (total <= 1) return;
+
+      st.prevSlot = st.slot;
+      st.prevAlpha = st.alpha;
+      st.slot = (st.slot + direction + total) % total;
+      st.alpha = 0;
+      st.timer = 0;
+    }
+
+    function getCurrentT() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      return maxScroll > 0 ? Math.min(scrollTop / maxScroll, 1) : 0;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') switchImage(-1);
+      if (e.key === 'ArrowRight') switchImage(1);
+    });
+
+    // 触屏滑动
+    let touchStartX = 0;
+    canvas.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    canvas.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) switchImage(dx > 0 ? -1 : 1);
+    }, { passive: true });
+
+    // 鼠标拖拽
+    let mouseDown = false, mouseStartX = 0;
+    canvas.addEventListener('mousedown', (e) => {
+      mouseDown = true;
+      mouseStartX = e.clientX;
+    });
+    canvas.addEventListener('mouseup', (e) => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      const dx = e.clientX - mouseStartX;
+      if (Math.abs(dx) > 60) switchImage(dx > 0 ? -1 : 1);
+    });
+
+    // ============ 14. 启动 ============
+    loadStops().then(() => {
+      if (dataReady) loop();
+    });
+
+  </script>
 </body>
 </html>

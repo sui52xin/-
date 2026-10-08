@@ -10,6 +10,24 @@ import (
 	"time"
 )
 
+type StoryContent struct {
+	Heading  string `json:"heading"`
+	Subtitle string `json:"subtitle"`
+	Video    string `json:"video"`
+	Map      string `json:"map"`
+	MapPage  string `json:"mapPage"`
+}
+
+func storyContent() StoryContent {
+	return StoryContent{
+		Heading:  "走进四川",
+		Subtitle: "从一段影像开始，穿过山川与世界相遇。",
+		Video:    "/static/media/intro.mp4",
+		Map:      "/static/media/sichuan-map.png",
+		MapPage:  "/map/sichuan",
+	}
+}
+
 const (
 	defaultPort     = "8080"   //默认监听
 	templatePattern = ""       //匹配的前端
@@ -34,7 +52,7 @@ var pageTemplates = template.Must(template.ParseFiles("index.html", "about.html"
 func main() {
 	mux1 := http.NewServeMux()
 	registerPandaScrollRoutes(mux1)
-	server1 := &http.Server{
+	server := &http.Server{
 		Addr:        "8080",
 		Handler:     withRequestLog(mux1), //日志中间件包裹
 		ReadTimeout: 5 * time.Second,
@@ -69,7 +87,7 @@ func main() {
 	mux.HandleFunc("/place/", placePageHandler)           //注册详情网页接口
 	mux.HandleFunc("/go/sichuan", sichuanRedirectHandler) // 注册兼容旧入口的四川跳转接口
 	mux.HandleFunc("/", homeHandler)                      //注册首页
-	server := &http.Server{                               //创建服务器实例
+	server = &http.Server{ //创建服务器实例
 		Addr:              ":" + port,
 		Handler:           logRequests(mux),
 		ReadHeaderTimeout: 5 * time.Second,  // 限制读取请求头的时间。
@@ -109,6 +127,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r) //返回404
 		return
 	}
+	
 	if r.Method != http.MethodGet {
 		//返回405
 		http.Error(w, "只允许GET请求", http.StatusMethodNotAllowed)
