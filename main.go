@@ -52,7 +52,11 @@ var pageTemplates = template.Must(template.ParseFiles("index.html", "about.html"
 func main() {
 	mux1 := http.NewServeMux()
 	registerPandaScrollRoutes(mux1)
+<<<<<<< HEAD
 	server := &http.Server{
+=======
+	server1 := &http.Server{
+>>>>>>> 0b0f62c9a72b3e6c2b038aa767d70487f455a092
 		Addr:        "8080",
 		Handler:     withRequestLog(mux1), //日志中间件包裹
 		ReadTimeout: 5 * time.Second,
