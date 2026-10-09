@@ -1,0 +1,238 @@
+{{define "panda-scroll.html"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 后端仍传入熊猫标题，前端在不修改后端的情况下覆盖为火车主题。 -->
+  <title>火车向前走</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow-x: hidden;
+      color: #2f261d;
+      background: #f4efe4;
+      font-family: "STKaiti", "KaiTi", "Microsoft YaHei", serif;
+    }
+
+    .train-page {
+      width: min(1080px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 64px 0 120px;
+    }
+
+    .page-title {
+      margin: 0 0 20px;
+      font-size: clamp(48px, 8vw, 104px);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .train-lead {
+      max-width: 720px;
+      margin: 0 0 48px;
+      color: #6f604e;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    /* 火车固定在下边缘，由脚本根据后端 panda_pos 换算横向位置。 */
+    .train-track {
+      position: fixed;
+      left: 0;
+      bottom: 22px;
+      z-index: 5;
+      width: 180px;
+      height: 120px;
+      will-change: transform;
+    }
+
+    .train-track img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 10px rgba(42, 34, 24, 0.24));
+    }
+
+    .train-scene {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .train-scene h2 {
+      margin: 0 0 12px;
+      padding-left: 18px;
+      border-left: 8px solid var(--accent, #8b6f47);
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: 1.1;
+    }
+
+    .train-scene p {
+      margin: 0;
+      color: #6f604e;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    /*
+     * 动画状态由后端 shot.effect 驱动。
+     * JS 先给 body 加 has-train-motion，JS 未启用时内容仍然可见。
+     */
+    body.has-train-motion .train-scene {
+      opacity: 0;
+      transition: opacity 700ms ease, transform 700ms ease, filter 700ms ease, clip-path 700ms ease;
+    }
+
+    body.has-train-motion .train-scene[data-effect="rise"] {
+      transform: translateY(40px);
+    }
+
+    body.has-train-motion .train-scene[data-effect="slide-left"] {
+      transform: translateX(-60px);
+    }
+
+    body.has-train-motion .train-scene[data-effect="zoom-in"] {
+      transform: scale(0.86);
+    }
+
+    body.has-train-motion .train-scene[data-effect="blur-in"] {
+      filter: blur(8px);
+    }
+
+    body.has-train-motion .train-scene[data-effect="tilt-in"] {
+      transform: rotate(-4deg);
+    }
+
+    body.has-train-motion .train-scene[data-effect="split-in"] {
+      clip-path: inset(0 50% 0 50%);
+    }
+
+    body.has-train-motion .train-scene.is-visible {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      clip-path: inset(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.has-train-motion .train-scene {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        clip-path: none;
+        transition: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .train-track {
+        width: 120px;
+        height: 84px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="train-page">
+    <h1 class="page-title">火车向前走</h1>
+    <p class="train-lead">滚动鼠标，看小火车从画面左侧驶向右侧，山川与市井依次登场。</p>
+
+    <div class="train-track" id="trainTrack">
+      <!-- 后端仍返回熊猫资源路径，前端改为使用新增的火车 SVG。 -->
+      <img src="/static/img/train.svg" alt="小火车">
+    </div>
+
+    <!-- 沿用后端 Shots 生成服务端可访问的章节，保留原有 effect 和 panda_pos。 -->
+    {{range $i, $shot := .Shots}}
+    <section class="train-scene" id="{{$shot.ID}}" style="--accent: {{$shot.Accent}}"
+             data-effect="{{$shot.Effect}}" data-pos="{{$shot.PandaPos}}">
+      {{if eq $shot.ID "bamboo"}}
+      <h2>{{inc $i}}. 火车从竹海出发</h2>
+      <p>向下滚动鼠标，它就会从画面左侧出发。</p>
+      {{else}}
+      <h2>{{inc $i}}. {{$shot.Title}}</h2>
+      <p>{{$shot.Subtitle}}</p>
+      {{end}}
+    </section>
+    {{end}}
+  </main>
+
+  <!-- ShotsJSON 里仍使用 panda_pos，前端按火车位置解释它。 -->
+  <script id="trainShotsData" type="application/json">{{.ShotsJSON}}</script>
+  <script>
+    (function () {
+      var track = document.getElementById("trainTrack");
+      if (!track) return;
+
+      // 解析后端返回的分镜数据，并用 id 建立映射。
+      var shots = [];
+      var shotsData = document.getElementById("trainShotsData");
+      try {
+        shots = shotsData ? JSON.parse(shotsData.textContent) : [];
+      } catch (error) {
+        console.warn("train shots JSON parse failed", error);
+      }
+
+      var shotById = Object.create(null);
+      shots.forEach(function (shot) {
+        shotById[shot.id] = shot;
+      });
+
+      var currentPosition = 0;
+
+      // panda_pos 是 0 到 1 的比例，这里换算成火车的实际横向位移。
+      function moveTrain(position) {
+        currentPosition = Math.max(0, Math.min(1, Number(position) || 0));
+        var maxX = Math.max(0, window.innerWidth - track.offsetWidth - 24);
+        track.style.transform = "translateX(" + (currentPosition * maxX) + "px)";
+      }
+
+      var sceneElements = document.querySelectorAll(".train-scene");
+
+      function activateScene(sceneElement) {
+        sceneElement.classList.add("is-visible");
+        var shot = shotById[sceneElement.id];
+        var position = shot ? shot.panda_pos : sceneElement.dataset.pos;
+        moveTrain(position);
+      }
+
+      document.body.classList.add("has-train-motion");
+
+      // 每个分镜进入视口时触发 effect，并移动到后端配置的 panda_pos。
+      if ("IntersectionObserver" in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              activateScene(entry.target);
+            }
+          });
+        }, { threshold: 0.45 });
+
+        sceneElements.forEach(function (sceneElement) {
+          observer.observe(sceneElement);
+        });
+      } else {
+        sceneElements.forEach(activateScene);
+      }
+
+      // 窗口尺寸变化时重新计算位置，避免火车越界。
+      window.addEventListener("resize", function () {
+        moveTrain(currentPosition);
+      });
+    })();
+  </script>
+</body>
+</html>
+{{end}}

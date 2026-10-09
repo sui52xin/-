@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"embed"
 	"encoding/json"
 	"html/template"
 	"log"
@@ -16,6 +18,14 @@ type StoryContent struct {
 	Video    string `json:"video"`
 	Map      string `json:"map"`
 	MapPage  string `json:"mapPage"`
+}
+type PageData struct {
+	PageTitle  string
+	Heading    string
+	Subtitle   string
+	VideoSrc   string
+	MapLogoSrc string
+	MapURL     string
 }
 
 func storyContent() StoryContent {
@@ -48,15 +58,24 @@ type PageConfig struct {
 
 // template是一个Go的包
 // 第 32 行修改为：
-var pageTemplates = template.Must(template.ParseFiles("index.html", "about.html", "template.html")) // 保存已经加载的 HTML 模板。
+//
+//go:embed template/*.html
+var assets embed.FS
+var indexTemplate = template.Must(template.ParseFS(assets, "templates/index.html"))
+var sichuanTemplate = template.Must(template.ParseFS(assets, "templates/sichuan.html"))
+var pandaTemplate = template.Must(
+	template.New("").
+		Funcs(template.FuncMap{
+			"inc": func(n int) int { return n + 1 },
+		}).
+		ParseFS(assets, "templates/*.html"),
+)
+var pageTemplates *template.Template
+
 func main() {
 	mux1 := http.NewServeMux()
 	registerPandaScrollRoutes(mux1)
-<<<<<<< HEAD
 	server := &http.Server{
-=======
-	server1 := &http.Server{
->>>>>>> 0b0f62c9a72b3e6c2b038aa767d70487f455a092
 		Addr:        "8080",
 		Handler:     withRequestLog(mux1), //日志中间件包裹
 		ReadTimeout: 5 * time.Second,
@@ -67,9 +86,9 @@ func main() {
 	}
 	var err error
 	//解析
-	pageTemplates, err = template.ParseGlob("templates/*")
+	pageTemplates, err = template.ParseGlob("templates/*.html")
 	if err != nil {
-		log.Fatal("加载 HTML 模板失败！", err)
+		log.Fatalf("加载 HTML 模板失败: %v", err)
 	}
 	staticRoot, err := filepath.Abs(staticDir)
 	//转化为绝对路径
@@ -91,7 +110,7 @@ func main() {
 	mux.HandleFunc("/place/", placePageHandler)           //注册详情网页接口
 	mux.HandleFunc("/go/sichuan", sichuanRedirectHandler) // 注册兼容旧入口的四川跳转接口
 	mux.HandleFunc("/", homeHandler)                      //注册首页
-	server = &http.Server{ //创建服务器实例
+	server = &http.Server{                                //创建服务器实例
 		Addr:              ":" + port,
 		Handler:           logRequests(mux),
 		ReadHeaderTimeout: 5 * time.Second,  // 限制读取请求头的时间。
@@ -127,11 +146,22 @@ func pageData() PageConfig {
 
 // 首页1home.html没写
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r) //返回404
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	
+	story := storyContent()
+	data := PageData{
+		PageTitle:  "四川故事",
+		Heading:    story.Heading,
+		Subtitle:   story.Subtitle,
+		VideoSrc:   story.Video,
+		MapLogoSrc: story.Map,
+		MapURL:     story.MapPage,
+	}
+	renderPage(w, indexTemplate, data)
+
 	if r.Method != http.MethodGet {
 		//返回405
 		http.Error(w, "只允许GET请求", http.StatusMethodNotAllowed)
@@ -142,8 +172,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func renderTemplate(w http.ResponseWriter, name string, data PageConfig) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	//响应类型为 HTML
-	if err := pageTemplates.ExcuteTemplate(w, name, data); err != nil {
-		log.Println("渲染模板%s失败%v", name, err)
+	if err := pageTemplates.ExecuteTemplate(w, name, data); err != nil {
+		log.Printf("渲染模板 %s 失败: %v", name, err)
+		http.Error(w, "render template failed", http.StatusInternalServerError)
+		return
 	}
 
 }
@@ -208,4 +240,27 @@ func findMapPoint(ID string) (MapPoint, bool) {
 		}
 	}
 	return MapPoint{}, false
+}
+func storyAPIHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if err := json.NewEncoder(w).Encode(storyContent()); err != nil {
+		log.Println("encode story api failed:%v", err)
+	}
+}
+func renderPage(w http.ResponseWriter, template *template.Template, data any) {
+	var buf bytes.Buffer
+	if err := template.Execute(&buf, data); err != nil {
+		log.Println("render template failed:%v", err)
+		http.Error(w, "render template failed", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if _, err := buf.WriteTo(w); err != nil {
+		log.Println("render template failed:%v", err)
+	}
 }

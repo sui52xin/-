@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-labelledby="trainTitle trainDescription">
+  <title id="trainTitle">小火车</title>
+  <desc id="trainDescription">一辆沿着轨道前进的小火车</desc>
+
+  <!-- 轨道 -->
+  <path d="M28 190h264" fill="none" stroke="#2a2218" stroke-width="8" stroke-linecap="round"/>
+  <path d="M56 178h208" fill="none" stroke="#9b8b75" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- 车身 -->
+  <path d="M68 48h184a32 32 0 0 1 32 32v72H36V80a32 32 0 0 1 32-32z" fill="#8b2e2e"/>
+  <path d="M52 92h216v48H52z" fill="#d4a843"/>
+  <path d="M74 70h64a16 16 0 0 1 16 16v30H58V86a16 16 0 0 1 16-16z" fill="#eadfc8"/>
+  <path d="M174 70h62a16 16 0 0 1 16 16v30h-94V86a16 16 0 0 1 16-16z" fill="#eadfc8"/>
+
+  <!-- 烟囱 -->
+  <path d="M132 18h26v28h-26z" fill="#3a3025"/>
+  <path d="M126 28h-34a10 10 0 0 0 0 20h34z" fill="#d9d0c1"/>
+  <path d="M226 28h-28a10 10 0 0 0 0 20h28z" fill="#d9d0c1"/>
+
+  <!-- 车轮 -->
+  <circle cx="82" cy="166" r="26" fill="#2a2218"/>
+  <circle cx="82" cy="166" r="12" fill="#eadfc8"/>
+  <circle cx="230" cy="166" r="26" fill="#2a2218"/>
+  <circle cx="230" cy="166" r="12" fill="#eadfc8"/>
+
+  <!-- 车头前灯 -->
+  <circle cx="279" cy="116" r="8" fill="#f0c86c"/>
+</svg>
